@@ -47,8 +47,7 @@ pipeline {
                             mkdir -p /home/$VM_USER/${APP_DIR}
                         "
 
-                        sshpass -p "$VM_PASS" scp -o StrictHostKeyChecking=no -r * $VM_USER@$VM_IP:/home/$VM_USER/${APP_DIR}/
-
+                        sshpass -p "$VM_PASS" scp -o StrictHostKeyChecking=no -r . $VM_USER@$VM_IP:/home/$VM_USER/${APP_DIR}/
                         sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "
                             cd /home/$VM_USER/${APP_DIR}
 
