@@ -14,7 +14,7 @@ pipeline {
                         env.APP_PORT = '3000'
                         env.APP_DIR  = 'main-app'
                     } 
-                    else if (env.BRANCH_NAME == 'staging') {
+                    else if (env.BRANCH_NAME == 'stag') {
                         env.APP_PORT = '3001'
                         env.APP_DIR  = 'staging-app'
                     } 
