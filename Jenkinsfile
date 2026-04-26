@@ -33,13 +33,10 @@ pipeline {
 
         stage('Deploy to Azure VM') {
             steps {
-                withCredentials([
-                    usernamePassword(
-                        credentialsId: 'azure-vm-creds',
-                        usernameVariable: 'VM_USER',
-                        passwordVariable: 'VM_PASS'
-                    )
-                ]) {
+            withCredentials([
+                string(credentialsId: 'VM_USER', variable: 'VM_USER'),
+                string(credentialsId: 'VM_PASS', variable: 'VM_PASS')
+            ]) {
                     sh '''
                         echo "Deploying ${BRANCH_NAME} on port ${APP_PORT}"
 
