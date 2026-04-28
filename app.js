@@ -11,14 +11,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // /home → simple HTML form to input numbers
 app.get('/', (req, res) => {
   res.send(`
-    <h1>Simple Node Calculator : STAGGING Branch</h1>
+    <h1>Simple Node Calculator : STAGGING Branch 1</h1>
     <form action="/page1" method="get">
       <input type="number" name="num1" placeholder="Number 11" required />
-      <input type="number" name="num2" placeholder="Number 2" required />
+      <input type="number" name="num2" placeholder="Number 22" required />
       <button type="submit">Get Sum</button>
     </form>
     <form action="/page2" method="get" style="margin-top:20px;">
-      <input type="number" name="num1" placeholder="Number 1" required />
+      <input type="number" name="num1" placeholder="Number 11" required />
       <input type="number" name="num2" placeholder="Number 22" required />
       <button type="submit">Get Difference</button>
     </form>
