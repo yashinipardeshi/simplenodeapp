@@ -60,9 +60,9 @@ pipeline {
                             sudo apt update -y
                             sudo apt install -y nodejs npm
 
-                            # Force kill anything already on the port (old nohup processes)
-                            sudo fuser -k ${APP_PORT}/tcp || true
-                            sleep 1
+                            // # Force kill anything already on the port (old nohup processes)
+                            // sudo fuser -k ${APP_PORT}/tcp || true
+                            // sleep 1
 
                             # Install PM2 globally if not present
                             which pm2 || sudo npm install -g pm2
