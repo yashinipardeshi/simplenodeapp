@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // /home → simple HTML form to input numbers
 app.get('/', (req, res) => {
   res.send(`
-    <h1>Simple Node Calculator</h1>
+    <h1>Simple Node Calculator - test</h1>
     <form action="/page1" method="get">
       <input type="number" name="num1" placeholder="Number 1" required />
       <input type="number" name="num2" placeholder="Number 2" required />
