@@ -52,7 +52,7 @@ pipeline {
                             -e "ssh -o StrictHostKeyChecking=no" \
                             . $VM_USER@$VM_IP:/home/$VM_USER/${APP_DIR}/
 
-                        # Step 3: Install deps and manage process with PM2
+                        # Step 3: Deploy with PM2
                         sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "
                             cd /home/$VM_USER/${APP_DIR}
 
@@ -60,19 +60,21 @@ pipeline {
                             sudo apt update -y
                             sudo apt install -y nodejs npm
 
+                            # Force kill anything already on the port (old nohup processes)
+                            sudo fuser -k ${APP_PORT}/tcp || true
+                            sleep 1
+
                             # Install PM2 globally if not present
                             which pm2 || sudo npm install -g pm2
 
                             # Install app dependencies
                             npm install
 
-                            # If app already running -> restart it (picks up new code)
-                            # If not running -> start it fresh
+                            # If app already running in PM2 -> restart it
+                            # If not -> start fresh
                             pm2 describe ${APP_DIR} > /dev/null 2>&1 \
                                 && pm2 restart ${APP_DIR} \
-                                || pm2 start app.js \
-                                    --name ${APP_DIR} \
-                                    --env APP_PORT=${APP_PORT}
+                                || pm2 start app.js --name ${APP_DIR}
 
                             # Save PM2 process list (survives reboots)
                             pm2 save
@@ -84,7 +86,7 @@ pipeline {
                             sleep 3
                             curl -I http://localhost:${APP_PORT} || true
 
-                            # Show recent logs
+                            # Show status and logs
                             echo '===== PM2 Status ====='
                             pm2 status
 
@@ -99,7 +101,7 @@ pipeline {
 
     post {
         success {
-            echo "Deployed ${BRANCH_NAME} on http://${VM_IP}:${APP_PORT}"
+            echo "Deployed ${BRANCH_NAME} at http://${VM_IP}:${APP_PORT}"
         }
         failure {
             echo "Deployment failed for ${BRANCH_NAME}"
