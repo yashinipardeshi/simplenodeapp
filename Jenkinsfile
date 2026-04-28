@@ -1,7 +1,5 @@
 pipeline {
-    agent {
-        label any
-    }
+    agent any
 
     environment {
         VM_IP = "20.109.102.61"
