@@ -1,6 +1,6 @@
 pipeline {
     agent {
-        label 'newNode'
+        label any
     }
 
     environment {
@@ -42,12 +42,12 @@ pipeline {
                     sh '''
                         echo "Deploying ${BRANCH_NAME} on port ${APP_PORT}"
 
-                        sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "
+                        sudo sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "
                             mkdir -p /home/$VM_USER/${APP_DIR}
                         "
 
-                        sshpass -p "$VM_PASS" scp -o StrictHostKeyChecking=no -r . $VM_USER@$VM_IP:/home/$VM_USER/${APP_DIR}/
-                        sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "
+                        sudo sshpass -p "$VM_PASS" scp -o StrictHostKeyChecking=no -r . $VM_USER@$VM_IP:/home/$VM_USER/${APP_DIR}/
+                        sudo sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "
                             cd /home/$VM_USER/${APP_DIR}
 
                             sudo apt update -y
