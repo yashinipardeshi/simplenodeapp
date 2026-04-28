@@ -1,3 +1,4 @@
+
 pipeline {
     agent {
         label 'newNode'
@@ -35,18 +36,27 @@ pipeline {
 
         stage('Deploy to Azure VM') {
             steps {
-            withCredentials([
-                string(credentialsId: 'VM_USER', variable: 'VM_USER'),
-                string(credentialsId: 'VM_PASS', variable: 'VM_PASS')
-            ]) {
+                withCredentials([
+                    string(credentialsId: 'VM_USER', variable: 'VM_USER'),
+                    string(credentialsId: 'VM_PASS', variable: 'VM_PASS')
+                ]) {
                     sh '''
                         echo "Deploying ${BRANCH_NAME} on port ${APP_PORT}"
 
+                        # Step 1 - Create directory and fix permissions
                         sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "
                             mkdir -p /home/$VM_USER/${APP_DIR}
+                            sudo chown -R $VM_USER:$VM_USER /home/$VM_USER/${APP_DIR}/
                         "
 
-                        sshpass -p "$VM_PASS" scp -o StrictHostKeyChecking=no -r . $VM_USER@$VM_IP:/home/$VM_USER/${APP_DIR}/
+                        # Step 2 - Copy files excluding .git and node_modules
+                        sshpass -p "$VM_PASS" rsync -av \
+                            --exclude='.git' \
+                            --exclude='node_modules' \
+                            -e "ssh -o StrictHostKeyChecking=no" \
+                            . $VM_USER@$VM_IP:/home/$VM_USER/${APP_DIR}/
+
+                        # Step 3 - Install and run
                         sshpass -p "$VM_PASS" ssh -o StrictHostKeyChecking=no $VM_USER@$VM_IP "
                             cd /home/$VM_USER/${APP_DIR}
 
@@ -55,9 +65,9 @@ pipeline {
 
                             npm install
 
-                            PID=\\$(lsof -ti:${APP_PORT} || true)
-                            if [ ! -z \\"\\$PID\\" ]; then
-                                kill -9 \\$PID
+                            PID=\$(lsof -ti:${APP_PORT} || true)
+                            if [ ! -z \"\$PID\" ]; then
+                                kill -9 \$PID
                             fi
 
                             export APP_PORT=${APP_PORT}
