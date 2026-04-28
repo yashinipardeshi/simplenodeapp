@@ -66,7 +66,7 @@ pipeline {
 
                             PID=\$(lsof -ti:${APP_PORT} || true)
                             if [ ! -z \"\$PID\" ]; then
-                                kill -9 \$PID
+                                sudo kill -9 \$PID
                             fi
 
                             export APP_PORT=${APP_PORT}
