@@ -68,6 +68,8 @@ pipeline {
                             if [ ! -z \"\$PID\" ]; then
                                 sudo kill -9 \$PID
                             fi
+                            
+                            echo $PID
 
                             export APP_PORT=${APP_PORT}
 
