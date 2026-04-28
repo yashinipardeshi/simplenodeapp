@@ -84,7 +84,7 @@ pipeline {
 
     post {
         success {
-            echo "Deployed ${BRANCH_NAME} at http://${VM_IP}:${APP_PORT}"
+            echo "Deployed ${BRANCH_NAME} on http://${VM_IP}:${APP_PORT}"
         }
     }
 }
