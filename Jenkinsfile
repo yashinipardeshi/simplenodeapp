@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        label 'newNode'
+    }
 
     environment {
         VM_IP = "20.109.102.61"
