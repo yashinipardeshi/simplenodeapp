@@ -1,0 +1,72 @@
+# Starter CI pipeline for a Node.js app with a Dockerfile.
+# Place this file at the root of your repo (same level as package.json).
+# It runs on every push to main: installs deps, runs tests (if any),
+# then builds the Docker image to prove the Dockerfile is healthy.
+#
+# Pushing the image to a registry (Azure Container Registry / Docker Hub)
+# is included below but commented out - uncomment once you've set up
+# a service connection (Project Settings > Service connections).
+
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  imageName: 'node-tsk'
+  imageTag: '$(Build.BuildId)'
+
+stages:
+  - stage: Build_And_Test
+    displayName: 'Install, Test, Build'
+    jobs:
+      - job: NodeJob
+        displayName: 'Node.js build'
+        steps:
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '20.x'
+            displayName: 'Install Node.js'
+
+          - script: |
+              npm ci
+            displayName: 'npm ci'
+
+          - script: |
+              npm test --if-present
+            displayName: 'Run tests (skips if no test script)'
+
+  - stage: Docker_Build
+    displayName: 'Build Docker image'
+    dependsOn: Build_And_Test
+    jobs:
+      - job: DockerJob
+        displayName: 'Docker build'
+        steps:
+          - task: Docker@2
+            displayName: 'Build image'
+            inputs:
+              command: 'build'
+              Dockerfile: '**/Dockerfile'
+              tags: |
+                $(imageTag)
+                latest
+              repository: '$(imageName)'
+
+          # --- Push to a registry (uncomment when ready) ---
+          # 1. Create an Azure Container Registry (or use Docker Hub).
+          # 2. Project Settings > Service connections > New > Docker Registry.
+          # 3. Replace 'my-acr-connection' and 'myregistry.azurecr.io' below.
+          #
+          # - task: Docker@2
+          #   displayName: 'Push image'
+          #   inputs:
+          #     command: 'push'
+          #     containerRegistry: 'my-acr-connection'
+          #     repository: 'myregistry.azurecr.io/$(imageName)'
+          #     tags: |
+          #       $(imageTag)
+          #       latest
