@@ -1,0 +1,32 @@
+apiVersion: external-secrets.io/v1
+kind: SecretStore
+metadata:
+  name: aws-sm
+  namespace: default
+spec:
+  provider:
+    aws:
+      service: SecretsManager
+      region: ap-south-1
+      auth:
+        jwt:
+          serviceAccountRef:
+            name: eso-sa
+---
+apiVersion: external-secrets.io/v1
+kind: ExternalSecret
+metadata:
+  name: app-secrets
+  namespace: default
+spec:
+  refreshInterval: 1h
+  secretStoreRef:
+    name: aws-sm
+    kind: SecretStore
+  target:
+    name: app-secrets
+  data:
+  - secretKey: APP_SECRET
+    remoteRef:
+      key: day9/app-secrets
+      property: APP_SECRET

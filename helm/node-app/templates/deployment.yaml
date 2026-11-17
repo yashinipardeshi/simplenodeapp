@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels: { app: node-app }
+  template:
+    metadata:
+      labels: { app: node-app }
+    spec:
+      containers:
+      - name: node-app
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.service.targetPort }}
+        {{- if .Values.secret.enabled }}
+        env:
+        - name: APP_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Values.secret.name }}
+              key: APP_SECRET
+        {{- end }}

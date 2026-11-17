@@ -1,0 +1,4 @@
+image:
+  repository: 205916667848.dkr.ecr.ap-south-1.amazonaws.com/ecs-demo
+  tag: v3secret:
+  enabled: true
