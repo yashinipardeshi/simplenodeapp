@@ -1,11 +1,18 @@
 replicaCount: 1
 image:
-  repository: 205916667848.dkr.ecr.ap-south-1.amazonaws.com/ecs-demo
-  tag: v2
+  repository: nodedemoacryp.azurecr.io/node-app
+  tag: v3
 service:
   type: LoadBalancer
   port: 80
   targetPort: 3000
 secret:
-  enabled: false        # turned on in Phase 3
+  enabled: false
   name: app-secrets
+resources:
+  requests:
+    cpu: 25m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
